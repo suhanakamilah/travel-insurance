@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Travel Insurance</title>
+
+    <style>
+body{
+font-family: Arial;
+margin:40px;
+}
+
+.section{
+margin-bottom:25px;
+padding:15px;
+border:1px solid #ddd;
+border-radius:8px;
+}
+
+button{
+padding:10px 20px;
+font-size:16px;
+cursor:pointer;
+}
+
+input,select{
+padding:6px;
+margin:5px;
+}
+
+#summary{
+display:none;
+background:#f7f7f7;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Travel Insurance Purchase</h1>
+
+<form id="insuranceForm">
+
+    <div class="section">
+
+        <h3>1. Coverage Type</h3>
+
+        <select id="coverageType">
+            <option value="SINGLE">Single Trip</option>
+            <option value="ANNUAL">Annual Coverage</option>
+        </select>
+
+    </div>
+
+    <div class="section">
+
+        <h3>2. Travel Area</h3>
+
+        <select id="area">
+            <option value="AREA_1">Area 1 - Domestic</option>
+            <option value="AREA_2">Area 2 - Asia</option>
+            <option value="AREA_3">Area 3 - Worldwide Excl USA</option>
+            <option value="AREA_4">Area 4 - Worldwide</option>
+        </select>
+
+    </div>
+
+    <div class="section">
+
+        <h3>3. Travel Duration</h3>
+
+        <label>Start Date</label>
+        <input type="date" id="startDate">
+
+        <label>End Date</label>
+        <input type="date" id="endDate">
+
+    </div>
+
+    <div class="section">
+
+        <h3>4. Choose Plan</h3>
+
+        <select id="plan">
+            <option value="PLAN_A">Plan A</option>
+            <option value="PLAN_B">Plan B</option>
+        </select>
+
+    </div>
+
+    <div class="section">
+
+        <h3>5. Customer Information</h3>
+
+        <input placeholder="Full Name" id="name"><br>
+
+        <input placeholder="NRIC" id="nric"><br>
+
+        <input placeholder="Address" id="address"><br>
+
+        <input placeholder="Email" id="email"><br>
+
+        <input placeholder="Phone" id="phone"><br>
+
+    </div>
+
+    <button type="button" onclick="calculatePrice()">
+        Calculate Price
+    </button>
+
+</form>
+
+<div id="summary" class="section">
+
+    <h2>Summary</h2>
+
+    <p><b>Coverage:</b> <span id="sCoverage"></span></p>
+
+    <p><b>Area:</b> <span id="sArea"></span></p>
+
+    <p><b>Plan:</b> <span id="sPlan"></span></p>
+
+    <p><b>Travel Period:</b> <span id="sTravel"></span></p>
+
+    <p><b>Customer:</b> <span id="sName"></span></p>
+
+    <p><b>Premium:</b> RM <span id="sPrice"></span></p>
+
+    <button onclick="purchasePolicy()">Proceed To Pay</button>
+
+</div>
+
+<script>
+
+let quoteData = {}
+
+async function calculatePrice(){
+
+quoteData = {
+
+coverageType: document.getElementById("coverageType").value,
+
+area: document.getElementById("area").value,
+
+plan: document.getElementById("plan").value,
+
+startDate: document.getElementById("startDate").value,
+
+endDate: document.getElementById("endDate").value,
+
+name: document.getElementById("name").value,
+
+nric: document.getElementById("nric").value,
+
+address: document.getElementById("address").value,
+
+email: document.getElementById("email").value,
+
+phone: document.getElementById("phone").value
+
+}
+
+const response = await fetch("/calculate-price",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify(quoteData)
+
+})
+
+const result = await response.json()
+
+document.getElementById("summary").style.display="block"
+
+document.getElementById("sCoverage").innerText = quoteData.coverageType
+
+document.getElementById("sArea").innerText = quoteData.area
+
+document.getElementById("sPlan").innerText = quoteData.plan
+
+document.getElementById("sTravel").innerText =
+quoteData.startDate + " to " + quoteData.endDate
+
+document.getElementById("sName").innerText = quoteData.name
+
+document.getElementById("sPrice").innerText = result.price
+
+quoteData.price = result.price
+
+}
+
+async function purchasePolicy(){
+
+const response = await fetch("/purchase",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify(quoteData)
+
+})
+
+const result = await response.json()
+
+alert("Purchase Successful! Policy No: " + result.policyNumber)
+
+}
+
+</script>
+
+</body>
+</html>
