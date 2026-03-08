@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Travel Insurance</title>
+</head>
+<body>
+
+    <style>
+body{
+font-family: Arial;
+margin:40px;
+}
+
+.section{
+margin-bottom:25px;
+padding:15px;
+border:1px solid #ddd;
+border-radius:8px;
+}
+
+button{
+padding:10px 20px;
+font-size:16px;
+cursor:pointer;
+}
+
+input,select{
+padding:6px;
+margin:5px;
+}
+
+#summary{
+display:none;
+background:#f7f7f7;
+}
+</style>
+
+</body>
+
+<body>
+
+<h1>Travel Insurance Purchase</h1>
+
+<form id="insuranceForm">
+
+    <div class="section">
+
+        <h3>1. Coverage Type</h3>
+
+        <select id="coverage">
+            <option value="SINGLE">Single Trip</option>
+            <option value="ANNUAL">Annual Coverage</option>
+        </select>
+
+    </div>
+
+    <div class="section">
+
+        <h3>2. Travel Area</h3>
+
+        <select id="area">
+            <option value="Area_1">Area 1 - Australia, Brunei, Cambodia, China, Hong Kong, India, Indonesia, Japan, Korea, Laos, Macau, Maldives, Myanmar, New Zealand, Pakistan, Philippines, Singapore, Sri Lanka, Taiwan, Thailand and Vietnam</option>
+            <option value="Area_2">Area 2 - Europe, Tibet, Nepal, Mongolia, Bhutan and Countries in Area 1</option>
+            <option value="Area_3">Area 3 - Worldwide and countries in Area 1 and 2 but excluding Afghanistan, Cuba, Democratic Republic of Congo, Iran, Iraq, Sudan and Syria</option>
+            <option value="Area_4">Area 4 - Malaysia (single trip between Peninsular and East Malaysia and vice versa)</option>
+        </select>
+
+    </div>
+
+    <div class="section">
+
+        <h3>3. Travel Duration</h3>
+
+        <label>Start Date</label>
+        <input type="date" id="start_date">
+
+        <label>End Date</label>
+        <input type="date" id="end_date">
+
+    </div>
+
+    <div class="section">
+
+        <h3>4. Choose Plan</h3>
+
+        <select id="plan">
+            <option value="Plan_A">Plan A</option>
+            <option value="Plan_B">Plan B</option>
+        </select>
+
+    </div>
+
+    <div class="section">
+
+        <h3>5. Customer Information</h3>
+
+        <input placeholder="Full Name" id="name"><br>
+
+        <input placeholder="NRIC" id="nric"><br>
+
+        <input placeholder="Email" id="email"><br>
+
+        <input placeholder="Mobile No" id="mobile_no"><br>
+
+        <input placeholder="Address Line 1" id="address_line1"><br>
+
+        <input placeholder="Address Line 2" id="address_line2"><br>
+
+        <input placeholder="Postcode" id="postcode"><br>
+
+    </div>
+
+    <button type="button" onclick="calculatePrice()">
+        Calculate Price
+    </button>
+
+</form>
+
+<div id="summary" class="section">
+
+    <h2>Summary</h2>
+
+    <p><b>Coverage:</b> <span id="sCoverage"></span></p>
+
+    <p><b>Area:</b> <span id="sArea"></span></p>
+
+    <p><b>Plan:</b> <span id="sPlan"></span></p>
+
+    <p><b>Travel Period:</b> <span id="sTravel"></span></p>
+
+    <p><b>Customer:</b> <span id="sName"></span></p>
+
+    <p><b>Premium:</b> RM <span id="sPrice"></span></p>
+
+    <button onclick="purchasePolicy()">Proceed To Pay</button>
+
+</div>
+
+<script>
+
+let quoteData = {}
+
+async function calculatePrice(){
+
+quoteData = {
+
+coverage: document.getElementById("coverage").value,
+
+area: document.getElementById("area").value,
+
+plan: document.getElementById("plan").value,
+
+start_date: document.getElementById("start_date").value,
+
+end_date: document.getElementById("end_date").value,
+
+name: document.getElementById("name").value,
+
+nric: document.getElementById("nric").value,
+
+address_line1: document.getElementById("address_line1").value,
+
+address_line2: document.getElementById("address_line2").value,
+
+postcode: document.getElementById("postcode").value,
+
+email: document.getElementById("email").value,
+
+mobile_no: document.getElementById("mobile_no").value
+
+}
+
+const response = await fetch("/insurance/calculate-price",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify(quoteData)
+
+})
+
+const result = await response.json()
+
+document.getElementById("summary").style.display="block"
+
+document.getElementById("sCoverage").innerText = quoteData.coverage
+
+document.getElementById("sArea").innerText = quoteData.area
+
+document.getElementById("sPlan").innerText = quoteData.plan
+
+document.getElementById("sTravel").innerText =
+
+quoteData.start_date + " to " + quoteData.end_date
+
+document.getElementById("sName").innerText = quoteData.name
+
+document.getElementById("sPrice").innerText = result.price
+
+quoteData.price = result.price
+
+}
+
+async function purchasePolicy(){
+
+const response = await fetch("/insurance/purchase",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify(quoteData)
+
+})
+
+const result = await response.json()
+
+alert("Purchase Successful! Policy No: " + result.policy_id)
+
+}
+
+</script>
+
+</body>
+</html>

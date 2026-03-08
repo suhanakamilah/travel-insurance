@@ -1,0 +1,21 @@
+CREATE SCHEMA IF NOT EXISTS "public";
+
+CREATE TABLE IF NOT exists insurance_policy (
+    policy_id UUID NOT NULL,
+    plan VARCHAR(255) NOT NULL,
+    coverage VARCHAR(255) NOT NULL,
+    area VARCHAR(255) NOT NULL,
+    start_date VARCHAR(255) NOT NULL,
+    end_date VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    nric VARCHAR(255) NOT NULL,
+    dob VARCHAR(255) NOT NULL,
+    gender VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    mobile_no VARCHAR(255) NOT NULL,
+    address_line1 VARCHAR(255) NOT NULL,
+    address_line2 VARCHAR(255) ,
+    postcode VARCHAR(255) NOT NULL,
+    price numeric(70,22) NOT NULL,
+    created_time timestamptz
+);
